@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OonVid 2.0</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Courier New",monospace;background:#080a0d;color:#d7d7d7}button,input,textarea{font:inherit}button{color:#111;background:#999;border:2px outset #ccc;padding:5px 10px;cursor:pointer}button:active{border-style:inset}input,textarea{background:#080808;color:#ddd;border:2px inset #777;padding:5px}textarea{resize:vertical}.top{height:38px;background:#171b22;border-bottom:2px solid #555;display:flex;align-items:center;padding:0 8px}.logo{font-size:19px}.spacer{flex:1}.clock{color:#32ff62;background:#020402;border:1px inset #555;padding:3px 8px}.desktop{min-height:calc(100vh - 78px);padding:16px;display:grid;grid-template-columns:1fr 390px;gap:16px;background:#090b0f}.window{border:2px solid #777;background:#191c21;box-shadow:3px 3px #020203}.title{height:31px;background:#111735;border-bottom:2px solid #555;display:flex;align-items:center;padding:0 7px}.close{margin-left:auto;width:24px;padding:0}.panel{border:2px solid #555;background:#101216;margin:10px;padding:9px}.hero{display:flex;gap:15px;align-items:center;min-height:100px}.logoBox{font-size:29px;border:2px outset #aaa;padding:14px;background:#181b20}.muted{color:#999}.progress{height:26px;background:#020304;border:2px inset #666}.fill{height:100%;background:#172fa5;width:0}.prow{display:flex;gap:10px;align-items:center}.pct{min-width:45px;text-align:right}.thead,.row{display:grid;grid-template-columns:1.7fr .7fr .7fr .8fr;gap:6px;align-items:center}.thead{background:#666;color:#111;padding:7px}.row{border:1px solid #444;padding:7px;background:#15171b}.empty{text-align:center;padding:35px 12px;color:#999;line-height:1.7}.msg{color:#27ff5c;white-space:pre-wrap;line-height:1.45}.sun{display:flex;gap:15px;align-items:center;background:#020403}.sunicon{font-size:42px;color:#20ff55}.video video{width:100%;max-height:310px;background:#000;display:block}.placeholder{height:210px;background:#030303;display:flex;align-items:center;justify-content:center;color:#777;text-align:center}.admin{display:none}.admin.on{display:block}.adminItem{border:2px solid #555;background:#14171b;padding:10px;margin:8px 0}.agrid{display:grid;grid-template-columns:135px 1fr;gap:7px}.login{max-width:460px;margin:45px auto}.hidden{display:none!important}.task{height:40px;background:#171a20;border-top:2px solid #555;display:flex;gap:6px;padding:4px}.tasktitle{border:2px inset #777;padding:5px 12px}@media(max-width:850px){.desktop{grid-template-columns:1fr;padding:8px}.side{display:none}.thead,.row{grid-template-columns:1.5fr .7fr .7fr}.thead div:last-child,.row div:last-child{display:none}.hero h1{font-size:19px}}
+</style></head><body>
+<div class="top"><div class="logo">▣ OonVid 2.0</div><div class="spacer"></div><div id="clock" class="clock">14:37</div></div>
+<div id="public" class="desktop"><main class="window"><div class="title">OonVid 2.0 — Archivo <button class="close">×</button></div>
+<section class="panel hero"><div class="logoBox">OonVid<br><small>2.0</small></div><div><h1>Sistema de transferencia y recuperación de vídeo</h1><div class="muted">Terminal pública // 1990</div><div class="muted">Fecha del sistema: 14/09/1990</div></div></section>
+<section class="panel"><div>Progreso de recuperación</div><div class="prow"><div class="progress" style="flex:1"><div id="fill" class="fill"></div></div><div id="pct" class="pct">0%</div></div></section>
+<section class="panel"><div>Archivos recuperados</div><div class="thead"><div>Nombre del archivo</div><div>Tipo</div><div>Desbloqueo</div><div>Estado</div></div><div id="files"></div></section>
+<section class="panel sun"><div class="sunicon">☼</div><div class="msg">EL SOL<br>"Juntos mantenemos la felicidad de Ciudad Ooney."</div></section></main>
+<aside class="side"><section class="window"><div class="title">Mensaje del sistema <button class="close">×</button></div><div class="panel msg">Bienvenido a OonVid 2.0<br><br>Aquí podrás acceder a los archivos recuperados del incidente en Ciudad Ooney.<br><br>La información se irá revelando conforme avanza la recuperación.</div></section>
+<section class="window" style="margin-top:16px"><div class="title">Reproductor de vídeo <button class="close">×</button></div><div id="viewer" class="panel video"><div class="placeholder">Selecciona un archivo recuperado.</div></div></section>
+<section class="window" style="margin-top:16px"><div class="title">Panel de administración <button class="close">×</button></div><div class="panel">▣ Acceso restringido <button style="float:right" onclick="showLogin()">Iniciar sesión...</button><div style="clear:both"></div></div></section></aside></div>
+<div id="login" class="window login hidden"><div class="title">Acceso administrativo</div><div class="panel"><p>Inicie sesión con su cuenta de administrador:</p><input id="pass" type="password" style="width:100%" onkeydown="if(event.key==='Enter')login()"><p id="err" style="color:#ff7070"></p><button onclick="login()">Aceptar</button> <button onclick="showPublic()">Cancelar</button></div></div>
+<div id="admin" class="admin"><div class="desktop" style="display:block"><section class="window"><div class="title">OonVid 2.0 — Servidor de administración</div><div class="panel"><button onclick="showPublic()">Cerrar sesión</button> <button onclick="document.getElementById('pick').click()">Importar archivo</button> <button onclick="setProgress()">Cambiar recuperación</button> <button onclick="resetAll()" style="background:#633;color:#fff">Restablecer datos</button><input id="pick" type="file" accept="*/*" hidden onchange="importVideo(event)"></div><div class="panel"><b>Progreso global: </b><span id="apct">0%</span><div class="progress" style="margin-top:8px"><div id="afill" class="fill"></div></div></div><div class="panel"><b>Vídeos importados</b><p class="muted">Cada vídeo comienza oculto. Cada archivo tiene su propio porcentaje y mensaje público editable.</p><div id="alist"></div></div></section></div></div>
+<div class="task"><button>▣ Inicio</button><div class="tasktitle">▣ OonVid 2.0 — Archivo</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/*
+ OonVid 2.0 — versión Supabase
+ Antes de publicar:
+ 1) Sustituye SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY por los valores de tu proyecto.
+ 2) El bucket oonvid-files se mantiene PRIVADO. La función Edge "get-published-file"
+    debe desplegarse para que visitantes puedan abrir archivos publicados de forma segura.
+*/
+const SUPABASE_URL = 'https://osuhsqqjjocztdowgwwt.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yZsZA4-K6ruwSTmi5Jc1Xg_iVfRsEkA';
+const BUCKET = 'oonvid-files';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+let sb, state = { progress: 0, imported: [] }, adminUser = null;
+
+function setError(message) {
+  $('err').textContent = message;
+}
+function isConfigured() {
+  return SUPABASE_URL.startsWith('https://') &&
+    !SUPABASE_URL.includes('PEGA_AQUI') &&
+    SUPABASE_PUBLISHABLE_KEY.length > 20 &&
+    !SUPABASE_PUBLISHABLE_KEY.includes('PEGA_AQUI');
+}
+function detectType(file) {
+  const mime = (file.type || '').toLowerCase();
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (mime.startsWith('video/') || ['mp4','webm','mov','m4v','ogv','avi','mkv'].includes(ext)) return 'Vídeo';
+  if (mime.startsWith('audio/') || ['mp3','wav','ogg','m4a','aac','flac'].includes(ext)) return 'Audio';
+  if (mime.startsWith('image/') || ['png','jpg','jpeg','gif','webp','bmp','svg'].includes(ext)) return 'Imagen';
+  if (mime.startsWith('text/') || ['txt','md','log','csv'].includes(ext)) return 'Texto';
+  if (mime === 'application/pdf' || ext === 'pdf') return 'PDF';
+  return 'Archivo';
+}
+function fileKind(f) {
+  const mime = (f.mime_type || '').toLowerCase();
+  const type = (f.type || '').toLowerCase();
+  if (mime.startsWith('video/') || type === 'vídeo' || type === 'video') return 'video';
+  if (mime.startsWith('audio/') || type === 'audio') return 'audio';
+  if (mime.startsWith('image/') || type === 'imagen' || type === 'image') return 'image';
+  if (mime.startsWith('text/') || type === 'texto' || type === 'text') return 'text';
+  if (mime === 'application/pdf' || type === 'pdf') return 'pdf';
+  return 'other';
+}
+async function loadData() {
+  if (!sb) return;
+  const settings = await sb.from('site_settings').select('id,recovery_progress').eq('id', 1).maybeSingle();
+  if (settings.error) console.warn('site_settings:', settings.error.message);
+  state.progress = Number(settings.data?.recovery_progress ?? 0);
+  let query = sb.from('files').select('id,name,type,mime_type,storage_path,threshold,message,published,created_at').order('created_at', {ascending:true});
+  if (!adminUser) query = query.eq('published', true);
+  const result = await query;
+  if (result.error) {
+    console.error(result.error);
+    alert('No se pudieron cargar los archivos. Revisa las columnas de la tabla files y sus políticas RLS.');
+    state.imported = [];
+  } else state.imported = result.data || [];
+  render();
+}
+function render() {
+  const p = Math.max(0, Math.min(100, Number(state.progress) || 0));
+  $('fill').style.width = p + '%';
+  $('pct').textContent = Math.round(p) + '%';
+  $('apct').textContent = Math.round(p) + '%';
+  $('afill').style.width = p + '%';
+  const available = state.imported.filter(f => f.published && p >= Number(f.threshold || 0));
+  $('files').innerHTML = available.length ? available.map(f =>
+    `<div class="row"><div>${esc(f.name)}</div><div>${esc(f.type || 'Archivo')}</div><div>${Number(f.threshold || 0)}%</div><div><button onclick="openFile('${esc(f.id)}')">Abrir</button></div></div>`
+  ).join('') : '<div class="empty">No hay archivos disponibles aún.<br>Los archivos aparecerán aquí cuando sean publicados y recuperados desde el panel de administración.</div>';
+  renderAdmin();
+}
+function renderAdmin() {
+  $('alist').innerHTML = state.imported.length ? state.imported.map(f =>
+    `<div class="adminItem"><b>${esc(f.name)}</b><div class="agrid" style="margin-top:8px">
+    <label>Desbloqueo %</label><input type="number" min="0" max="100" value="${Number(f.threshold)||0}" onchange="editFile('${esc(f.id)}','threshold',this.value)">
+    <label>Mensaje público</label><textarea onchange="editFile('${esc(f.id)}','message',this.value)">${esc(f.message||'')}</textarea>
+    <label>Publicado</label><input type="checkbox" ${f.published?'checked':''} onchange="editFile('${esc(f.id)}','published',this.checked)">
+    <label>Estado</label><span class="msg">${f.published?'PUBLICADO':'OCULTO'}</span>
+    <label>Tipo</label><span>${esc(f.type || 'Archivo')}</span>
+    <label>Acciones</label><button onclick="deleteFile('${esc(f.id)}')">Eliminar archivo</button>
+    </div></div>`
+  ).join('') : '<div class="empty">No hay archivos importados.</div>';
+}
+async function openFile(id) {
+  const f = state.imported.find(x => String(x.id) === String(id));
+  if (!f) return;
+  const viewer = $('viewer');
+  viewer.innerHTML = '<div class="placeholder">Recuperando archivo...</div>';
+  try {
+    // El bucket es privado: la función Edge debe comprobar published/threshold
+    // y devolver una URL firmada de corta duración para el archivo solicitado.
+    const { data, error } = await sb.functions.invoke('get-published-file', { body: { file_id: f.id } });
+    if (error || !data?.signedUrl) throw new Error(data?.error || error?.message || 'La función get-published-file no está configurada.');
+    viewer.innerHTML = '';
+    const kind = fileKind(f);
+    let media;
+    if (kind === 'video') { media = document.createElement('video'); media.controls = true; }
+    else if (kind === 'audio') { media = document.createElement('audio'); media.controls = true; }
+    else if (kind === 'image') { media = document.createElement('img'); media.style.maxWidth='100%'; }
+    else if (kind === 'text') {
+      const a = document.createElement('a'); a.href = data.signedUrl; a.target='_blank'; a.rel='noopener'; a.textContent='Abrir o descargar archivo de texto'; viewer.appendChild(a);
+    } else {
+      const a = document.createElement('a'); a.href = data.signedUrl; a.target='_blank'; a.rel='noopener'; a.textContent='Abrir o descargar archivo'; viewer.appendChild(a);
+    }
+    if (media) { media.src = data.signedUrl; media.style.maxWidth='100%'; media.style.display='block'; viewer.appendChild(media); }
+    const message = document.createElement('div'); message.className='panel msg'; message.textContent=f.message || 'Sin mensaje público.'; viewer.appendChild(message);
+  } catch (e) {
+    viewer.innerHTML = '<div class="placeholder">No se pudo abrir el archivo.<br>Comprueba que esté publicada la función segura de archivos.</div>';
+    console.error(e);
+  }
+}
+function showLogin() {
+  $('public').classList.add('hidden'); $('login').classList.remove('hidden'); $('admin').classList.remove('on');
+  setError(''); $('pass').focus();
+  $('login').querySelector('p').textContent = 'Inicie sesión con el correo y la contraseña del administrador de Supabase:';
+  $('pass').type = 'password'; $('pass').placeholder = 'Contraseña';
+  if (!$('email')) {
+    const email = document.createElement('input'); email.id='email'; email.type='email'; email.placeholder='Correo del administrador'; email.autocomplete='username'; email.style.width='100%'; email.style.marginBottom='8px';
+    $('pass').parentNode.insertBefore(email, $('pass'));
+  }
+  $('email').value='';
+}
+async function login() {
+  if (!sb) return setError('Primero configura la URL y la publishable key de Supabase en el HTML.');
+  const email = $('email')?.value.trim();
+  const password = $('pass').value;
+  if (!email || !password) return setError('Introduce el correo y la contraseña.');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) return setError('No se pudo iniciar sesión: ' + error.message);
+  adminUser = data.user;
+  $('login').classList.add('hidden'); $('admin').classList.add('on'); $('pass').value=''; setError('');
+  await loadData();
+}
+async function showPublic() {
+  if (sb) await sb.auth.signOut();
+  adminUser = null;
+  $('login').classList.add('hidden'); $('admin').classList.remove('on'); $('public').classList.remove('hidden');
+  await loadData();
+}
+async function importVideo(e) {
+  const file = e.target.files?.[0];
+  if (!file || !adminUser) return;
+  const id = (crypto.randomUUID ? crypto.randomUUID() : 'f_' + Date.now() + '_' + Math.random().toString(16).slice(2));
+  const safeName = file.name.replace(/[^\w.\-() áéíóúÁÉÍÓÚñÑ]/g, '_');
+  const path = `${id}/${safeName}`;
+  const { error: uploadError } = await sb.storage.from(BUCKET).upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+  if (uploadError) { alert(
+  'Error al subir el archivo:\n' +
+  JSON.stringify(uploadError, null, 2)
+);e.target.value=''; return; }
+  const type = detectType(file);
+  const { error: insertError } = await sb.from('files').insert({
+    name: file.name, type, mime_type: file.type || 'application/octet-stream',
+    storage_path: path, threshold: 0,
+    message: 'Archivo recuperado.\nMensaje pendiente de edición.', published: false
+  });
+  if (insertError) {
+    await sb.storage.from(BUCKET).remove([path]);
+    alert('El archivo se subió, pero no se pudo registrar en la tabla files: ' + insertError.message);
+  }
+  e.target.value = '';
+  await loadData();
+}
+async function editFile(id, key, value) {
+  if (!adminUser) return alert('Debes iniciar sesión como administrador.');
+  const patch = {};
+  if (key === 'threshold') patch.threshold = Math.max(0, Math.min(100, Number(value) || 0));
+  if (key === 'message') patch.message = value;
+  if (key === 'published') patch.published = !!value;
+  const { error } = await sb.from('files').update(patch).eq('id', id);
+  if (error) { alert('No se pudo guardar el cambio: ' + error.message); return; }
+  await loadData();
+}
+async function setProgress() {
+  if (!adminUser) return;
+  const n = prompt('Nuevo porcentaje de recuperación (0-100):', state.progress);
+  if (n === null || isNaN(n)) return;
+  const value = Math.max(0, Math.min(100, Number(n)));
+  const { error } = await sb.from('site_settings').upsert({ id: 1, recovery_progress: value }, { onConflict: 'id' });
+  if (error) { alert('No se pudo guardar el progreso: ' + error.message); return; }
+  state.progress = value; render();
+}
+async function deleteFile(id) {
+  if (!adminUser || !confirm('¿Eliminar este archivo y sus datos? Esta acción no se puede deshacer.')) return;
+  const f = state.imported.find(x => String(x.id) === String(id));
+  if (f?.storage_path) {
+    const { error: storageError } = await sb.storage.from(BUCKET).remove([f.storage_path]);
+    if (storageError) { alert('No se pudo eliminar el archivo del almacenamiento: ' + storageError.message); return; }
+  }
+  const { error } = await sb.from('files').delete().eq('id', id);
+  if (error) { alert('No se pudo eliminar el registro: ' + error.message); return; }
+  await loadData();
+}
+async function resetAll() {
+  if (!adminUser || !confirm('¿Restablecer el progreso y eliminar todos los archivos importados? Esta acción no se puede deshacer.')) return;
+  for (const f of state.imported) {
+    if (f.storage_path) {
+      const { error } = await sb.storage.from(BUCKET).remove([f.storage_path]);
+      if (error) { alert('No se pudo borrar un archivo del almacenamiento: ' + error.message); return; }
+    }
+  }
+  // Elimina los registros uno por uno para evitar comparar IDs numéricos con texto vacío.
+  for (const f of state.imported) {
+    const { error: delError } = await sb.from('files').delete().eq('id', f.id);
+    if (delError) { alert('No se pudo eliminar el registro ' + f.name + ': ' + delError.message); return; }
+  }
+  const { error: progressError } = await sb.from('site_settings').upsert({ id: 1, recovery_progress: 0 }, { onConflict: 'id' });
+  if (progressError) { alert('Se borraron los archivos, pero no se pudo reiniciar el progreso: ' + progressError.message); return; }
+  state = { progress: 0, imported: [] }; render(); await showPublic();
+}
+function clock() {
+  const d = new Date();
+  $('clock').textContent = d.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit',hour12:false});
+}
+(async function init() {
+  clock(); setInterval(clock, 30000);
+  if (!isConfigured()) {
+    $('files').innerHTML = '<div class="empty">Falta configurar Supabase.<br>Completa SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY en el archivo HTML.</div>';
+    $('login').querySelector('p').textContent = 'Configura primero las credenciales públicas de Supabase en el HTML.';
+    return;
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  const { data } = await sb.auth.getSession();
+  if (data?.session) { adminUser = data.session.user; }
+  await loadData();
+  if (adminUser && new URLSearchParams(location.search).get('admin') === '1') {
+    $('public').classList.add('hidden'); $('admin').classList.add('on');
+  }
+})();
+</script></body></html>
